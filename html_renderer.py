@@ -5,14 +5,16 @@ class HTMLComponent:
     def __str__(self):
         pass
 
-
 class HTMLContainer(HTMLComponent):
-    def __init__(self, child: HTMLComponent):
-        self.child: HTMLComponent = child
+    def __init__(self):
+        self.children: list[HTMLComponent] = []
+
+    def add_component(self, child: HTMLComponent):
+        self.children.append(child)
 
     def __str__(self) -> str:
-        return f'<div class="container">{str(self.child)}</div>'
-        
+        str_children = list(map(lambda child: str(child), self.children))
+        return f'<div class="container">{"".join(str_children)}</div>'
 
 class HTMLTableCell(HTMLComponent):
     def __init__(self, data, is_td=True):
@@ -24,7 +26,6 @@ class HTMLTableCell(HTMLComponent):
             return f"<td>{self.data}</td>"
         else:
             return f"<th>{self.data}</td>"
-
 
 class HTMLTableRow(HTMLComponent):
     def __init__(self):
@@ -54,8 +55,10 @@ class HTMLTable(HTMLComponent):
         str_body = list(map(lambda row: str(row), self.body))
         str_body = "\n".join(str_body)
         return f"""
-        <table class="table table-striped">
-            <tr>{str(self.head)}</tr>
+        <table>
+            <thead>
+                <tr>{str(self.head)}</tr>
+            </thead>
             <tbody>
             {str_body}
             </tbody>
@@ -80,23 +83,25 @@ class HTMLFile:
                 <meta charset="UTF-8">
                 <meta http-equiv="X-UA-Compatible" content="IE=edge">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+                <link rel="stylesheet" href="style.css">
                 <title>{self.title}</title>
             </head>
             <body>
-                <div class="container">
                 {str_body}
-                </div>
             </body>
         </html>
         """
 
 class HTMLParagraph(HTMLComponent):
-    def __init__(self, text):
+    def __init__(self, text, bold=False):
         self.text = text
+        self.bold = bold
 
     def __str__(self) -> str:
-        return f"<p>{self.text}</p>"
+        if self.bold:
+            return f'<p><strong>{self.text}</strong></p>'
+        else:
+            return f'<p>{self.text}</p>'
 
 
 class HTMLHeadline(HTMLComponent):
@@ -105,4 +110,11 @@ class HTMLHeadline(HTMLComponent):
         self.level = level
 
     def __str__(self) -> str:
-        return f"<h{self.level}>{self.text}</h{self.level}>"
+        return f'<h{self.level}>{self.text}</h{self.level}>'
+
+class HTMLiFrame(HTMLComponent):
+    def __init__(self, src: str):
+        self.src = src
+
+    def __str__(self):
+        return f'<iframe src="{self.src}" frameborder="0" height="400"></iframe>'
