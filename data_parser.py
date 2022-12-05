@@ -1,6 +1,6 @@
 """This module parses the given data into virtual html components"""
 import datetime
-from typing import List
+from typing import List, Tuple
 import plotly.express as px
 from pandas import DataFrame
 from html_components import HTMLContainer, HTMLHeadline, HTMLParagraph, HTMLTable, HTMLiFrame
@@ -9,7 +9,7 @@ from helper_functions import count_individuals
 
 def parse_artists(artists: list, count_of_top_artists=10, count_of_least_streamed_artists=10) -> HTMLContainer:
     """Parses statistics which are related directly to artists and returns an HTMLContainer-Component"""
-    count_of_artists: List[List[str, int]] = count_individuals(artists)
+    count_of_artists: List[Tuple[str, int]] = count_individuals(artists)
     count_of_artists.sort(reverse=True, key=(lambda a: a[1]))
     artist_container = HTMLContainer()
 
@@ -38,7 +38,7 @@ def parse_artists(artists: list, count_of_top_artists=10, count_of_least_streame
 
 def parse_songs(songs: List, count_of_top_songs=10) -> HTMLContainer:
     """Parses statistics which are related directly to songs and returns an HTMLContainer-Component"""
-    count_of_songs: List[List[str, int]] = count_individuals(songs)
+    count_of_songs: List[Tuple[str, int]] = count_individuals(songs)
     count_of_songs.sort(reverse=True, key=(lambda a: a[1]))
 
     songs_container = HTMLContainer()
@@ -63,22 +63,22 @@ def parse_songs(songs: List, count_of_top_songs=10) -> HTMLContainer:
     return songs_container
 
 
-def parse_playtime(playtimes: list) -> HTMLContainer:
+def parse_playtime(times: List) -> HTMLContainer:
     """Parses statistics which are related directly to playtime of the user and returns an HTMLContainer-Component"""
     total_playtime = 0
-    for playtime in playtimes:
+    for playtime in times:
         total_playtime += playtime / 1000
 
     playtime_container = HTMLContainer()
 
     playtime_container.add_component(HTMLHeadline("Your Playtime ⌚", level=2))
-    average_playtime_per_stream = round(total_playtime / len(playtimes) / 60, ndigits=2)
+    average_playtime_per_stream = round(total_playtime / len(times) / 60, ndigits=2)
     playtime_container.add_component(HTMLParagraph(
         f"Your average stream time per song streamed is <strong>{average_playtime_per_stream} minutes</strong>."))
     playtime_container.add_component(HTMLParagraph(
         f"""
-        Additionally your longest stream took you about <strong>{round(max(playtimes) / 1000 / 60, ndigits=2)} 
-        minute(s)</strong> while your shortest stream was just <strong>{round(min(playtimes) / 1000 / 60, ndigits=4)}
+        Additionally your longest stream took you about <strong>{round(max(times) / 1000 / 60, ndigits=2)} 
+        minute(s)</strong> while your shortest stream was just <strong>{round(min(times) / 1000 / 60, ndigits=4)}
         </strong> minute(s) long.
         """
     ))
@@ -111,10 +111,10 @@ def parse_dates(dates: list, path: str) -> HTMLContainer:
     dates_table = HTMLTable(["Date", "Streams"])
     for i in range(0, 11):
         date = datetime.date.fromisoformat(plays_per_day[i][0])
-        dates_table.add_row([
+        dates_table.add_row((
             date.strftime("%A %d %B %Y"),
             plays_per_day[i][1]
-        ])
+        ))
 
     streams_in_year = DataFrame(
         dict(

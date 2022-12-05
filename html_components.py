@@ -2,7 +2,7 @@
 This module contains the classes for the HTMLComponents
 used to build the resulting html document with nested objects
 """
-from typing import List
+from typing import List, Tuple
 from dataclasses import dataclass
 
 
@@ -27,8 +27,7 @@ class HTMLContainer(HTMLComponent):
         self.children.append(child)
 
     def __str__(self) -> str:
-        str_children = list(map(lambda child: str(child), self.children))
-        return f'<div class="container">{"".join(str_children)}</div>'
+        return f'<div class="container">{"".join([str(child) for child in self.children])}</div>'
 
 
 @dataclass
@@ -57,8 +56,7 @@ class HTMLTableRow(HTMLComponent):
         self.cells.append(cell)
 
     def __str__(self) -> str:
-        str_cells = list(map(lambda cell: str(cell), self.cells))
-        return f'<tr>{"".join(str_cells)}</tr>'
+        return f'<tr>{"".join([str(cell) for cell in self.cells])}</tr>'
 
 
 @dataclass
@@ -70,17 +68,16 @@ class HTMLTable(HTMLComponent):
         for item in head:
             self.head.add_cell(HTMLTableCell(item, is_td=False))
         self.body: List[HTMLTableRow] = []
-        
-    def add_row(self, data: List):
+
+    def add_row(self, data: Tuple):
         """Converts haded one dimensional data list to table row object and stored in this objects body list"""
         row: HTMLTableRow = HTMLTableRow()
         for item in data:
             row.add_cell(HTMLTableCell(item))
         self.body.append(row)
-        
+
     def __str__(self) -> str:
-        str_body = list(map(lambda row: str(row), self.body))
-        str_body = "\n".join(str_body)
+        str_body = "\n".join([str(component) for component in self.body])
         return f"""
         <table>
             <thead>
@@ -106,8 +103,7 @@ class HTMLFile(HTMLComponent):
         self.components.append(component)
 
     def __str__(self) -> str:
-        str_body = list(map(lambda component: str(component), self.components))
-        str_body = "\n".join(str_body)
+        str_body = "\n".join([str(component) for component in self.components])
         return f"""
         <!DOCTYPE html>
         <html lang="en">
