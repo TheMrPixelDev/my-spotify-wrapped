@@ -15,15 +15,23 @@ def parse_artists(artists: list, count_of_top_artists=10, count_of_least_streame
 
     # Generating table with top artists
     top_artists_table = HTMLTable(["Artist", "Total Streams"])
+    total_streams_of_top_x = 0
+    total_amount_of_streams = len(artists)
     for i in range(0, count_of_top_artists + 1):
         top_artists_table.add_row(count_of_artists[i])
+        total_streams_of_top_x += count_of_artists[i][1]
+    top_x_to_streams_ratio = round(total_streams_of_top_x/total_amount_of_streams*100, ndigits=2)
+    
     artist_container.add_component(HTMLHeadline(f"Top {count_of_top_artists} Streamed Artists 👩‍🎨", level=2))
     artist_container.add_component(top_artists_table)
     # Adding amount of artists which have been streamed
     artist_container.add_component(HTMLParagraph(
         f"""
         You have streamed <strong>{len(count_of_artists)}</strong> 
-        different artists and clicked the play button <strong>{len(artists)}</strong> times.
+        different artists and clicked the play button <strong>{total_amount_of_streams}</strong> times.
+        This means that in average you streamed every single artist <strong>{round(len(artists)/len(count_of_artists) ,ndigits=2)}</strong> time(s).
+        The streams you generated listening to your top {count_of_top_artists} most listened artists take up <strong>{top_x_to_streams_ratio}%
+        </strong> of your total streams.
         """
     ))
 
