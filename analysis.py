@@ -27,6 +27,3 @@ top_10_days_with_most_streams = df[["endDate"]].groupby("endDate")["endDate"].co
 total_time_streamed = df[["msPlayed"]].sum().apply(lambda ms: ms/1000/60/60)["msPlayed"] # time is given in hours
 amount_days_streams_occured = df[["endDate"]].nunique() # max is 365
 amount_streams_for_each_day = df[["endDate"]].value_counts().sort_index(ascending=True)
-
-print(amount_streams_for_each_day.values)
-
